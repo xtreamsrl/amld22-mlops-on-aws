@@ -36,3 +36,6 @@ MLOps is about supporting and automating the assessment of model performance, mo
 During the workshop, we will showcase the challenges of “applied” machine learning and the value of MLOps with a practical case study. We will develop a ML model following MLOps best practices, from raw data to production deployment. Then, we will simulate a further iteration of development, resulting in better performance, and we will appreciate how MLOps allows for easy comparison and evolution of models.
 
 AWS will provide the tools to effectively implement MLOps: the workshop is also intended to offer an overview of the main resources of the cloud platform and to show how they can support model development and operation.
+
+## CloudFormation
+Please, use the following link: https://public-workshop.s3.eu-west-1.amazonaws.com/amldtemplate.yml
