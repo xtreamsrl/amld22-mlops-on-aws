@@ -1,0 +1,233 @@
+Resources:
+  VPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 10.0.0.0/16
+      EnableDnsHostnames: true
+      EnableDnsSupport: true
+    Metadata:
+      aws:cdk:path: Amld22Stack/VPC
+  InternetGateway:
+    Type: AWS::EC2::InternetGateway
+    Metadata:
+      aws:cdk:path: Amld22Stack/InternetGateway
+  RouteTablePublic:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId:
+        Ref: VPC
+    Metadata:
+      aws:cdk:path: Amld22Stack/RouteTablePublic
+  RouteTablePrivate:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId:
+        Ref: VPC
+    Metadata:
+      aws:cdk:path: Amld22Stack/RouteTablePrivate
+  InternetGateWayAttachment:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId:
+        Ref: VPC
+      InternetGatewayId:
+        Ref: InternetGateway
+    Metadata:
+      aws:cdk:path: Amld22Stack/InternetGateWayAttachment
+  PublicRoute:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId:
+        Ref: RouteTablePublic
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId:
+        Ref: InternetGateway
+    DependsOn:
+      - InternetGateWayAttachment
+    Metadata:
+      aws:cdk:path: Amld22Stack/PublicRoute
+  privateSubneta:
+    Type: AWS::EC2::Subnet
+    Properties:
+      CidrBlock:
+        Fn::Select:
+          - 4
+          - Fn::Cidr:
+              - 10.0.0.0/16
+              - 16
+              - "8"
+      VpcId:
+        Ref: VPC
+      AvailabilityZone:
+        Fn::Select:
+          - 0
+          - Fn::GetAZs:
+              Ref: AWS::Region
+    Metadata:
+      aws:cdk:path: Amld22Stack/privateSubneta
+  PublicSubneta:
+    Type: AWS::EC2::Subnet
+    Properties:
+      CidrBlock:
+        Fn::Select:
+          - 0
+          - Fn::Cidr:
+              - 10.0.0.0/16
+              - 16
+              - "8"
+      VpcId:
+        Ref: VPC
+      AvailabilityZone:
+        Fn::Select:
+          - 0
+          - Fn::GetAZs:
+              Ref: AWS::Region
+    Metadata:
+      aws:cdk:path: Amld22Stack/PublicSubneta
+  PublicRouteAttachmenta:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId:
+        Ref: RouteTablePublic
+      SubnetId:
+        Ref: PublicSubneta
+    Metadata:
+      aws:cdk:path: Amld22Stack/PublicRouteAttachmenta
+  privateSubnetb:
+    Type: AWS::EC2::Subnet
+    Properties:
+      CidrBlock:
+        Fn::Select:
+          - 5
+          - Fn::Cidr:
+              - 10.0.0.0/16
+              - 16
+              - "8"
+      VpcId:
+        Ref: VPC
+      AvailabilityZone:
+        Fn::Select:
+          - 1
+          - Fn::GetAZs:
+              Ref: AWS::Region
+    Metadata:
+      aws:cdk:path: Amld22Stack/privateSubnetb
+  PublicSubnetb:
+    Type: AWS::EC2::Subnet
+    Properties:
+      CidrBlock:
+        Fn::Select:
+          - 1
+          - Fn::Cidr:
+              - 10.0.0.0/16
+              - 16
+              - "8"
+      VpcId:
+        Ref: VPC
+      AvailabilityZone:
+        Fn::Select:
+          - 1
+          - Fn::GetAZs:
+              Ref: AWS::Region
+    Metadata:
+      aws:cdk:path: Amld22Stack/PublicSubnetb
+  PublicRouteAttachmentb:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId:
+        Ref: RouteTablePublic
+      SubnetId:
+        Ref: PublicSubnetb
+    Metadata:
+      aws:cdk:path: Amld22Stack/PublicRouteAttachmentb
+  privateSubnetc:
+    Type: AWS::EC2::Subnet
+    Properties:
+      CidrBlock:
+        Fn::Select:
+          - 6
+          - Fn::Cidr:
+              - 10.0.0.0/16
+              - 16
+              - "8"
+      VpcId:
+        Ref: VPC
+      AvailabilityZone:
+        Fn::Select:
+          - 2
+          - Fn::GetAZs:
+              Ref: AWS::Region
+    Metadata:
+      aws:cdk:path: Amld22Stack/privateSubnetc
+  PublicSubnetc:
+    Type: AWS::EC2::Subnet
+    Properties:
+      CidrBlock:
+        Fn::Select:
+          - 2
+          - Fn::Cidr:
+              - 10.0.0.0/16
+              - 16
+              - "8"
+      VpcId:
+        Ref: VPC
+      AvailabilityZone:
+        Fn::Select:
+          - 2
+          - Fn::GetAZs:
+              Ref: AWS::Region
+    Metadata:
+      aws:cdk:path: Amld22Stack/PublicSubnetc
+  PublicRouteAttachmentc:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId:
+        Ref: RouteTablePublic
+      SubnetId:
+        Ref: PublicSubnetc
+    Metadata:
+      aws:cdk:path: Amld22Stack/PublicRouteAttachmentc
+  S3Endpoint:
+    Type: AWS::EC2::VPCEndpoint
+    Properties:
+      ServiceName:
+        Fn::Sub: com.amazonaws.${AWS::Region}.s3
+      VpcId:
+        Ref: VPC
+      RouteTableIds:
+        - Ref: RouteTablePublic
+        - Ref: RouteTablePrivate
+      VpcEndpointType: Gateway
+    Metadata:
+      aws:cdk:path: Amld22Stack/S3Endpoint
+  DynamoEndpoint:
+    Type: AWS::EC2::VPCEndpoint
+    Properties:
+      ServiceName:
+        Fn::Sub: com.amazonaws.${AWS::Region}.dynamodb
+      VpcId:
+        Ref: VPC
+      RouteTableIds:
+        - Ref: RouteTablePublic
+        - Ref: RouteTablePrivate
+      VpcEndpointType: Gateway
+    Metadata:
+      aws:cdk:path: Amld22Stack/DynamoEndpoint
+  RoleForSagemakerStudioUsersB19B3B05:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service: sagemaker.amazonaws.com
+        Version: "2012-10-17"
+      ManagedPolicyArns:
+        - Fn::Join:
+            - ""
+            - - "arn:"
+              - Ref: AWS::Partition
+              - :iam::aws:policy/AmazonSageMakerFullAccess
+    Metadata:
+      aws:cdk:path: Amld22Stack/RoleForSagemakerStudioUsers/Resource
